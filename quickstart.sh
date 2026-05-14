@@ -1,18 +1,14 @@
 #!/bin/bash
-# ====================================================
-# F*CKING GORGEOUS - Quickstart
-# Uses HIGGSFIELD API for image generation
-# ====================================================
+# Fucking Gorgeous - Quickstart with Leonardo.ai
 set -e
 
-echo "=========================================="
-echo "  Setting up F*cking Gorgeous on VPS..."
-echo "=========================================="
+echo "=== Fucking Gorgeous Coloring Book - VPS Setup ==="
 
 # Install deps
-apt update && apt install -y git python3-pip python3-venk imagemagick poppler-utils
+apt-get update -qq
+apt-get install -y -qq git python3 python3-pip python3-venv poppler-utils fonts-dejavu fonts-liberation 2>/dev/null
 
-# Clone (or update)
+# Clone repo
 cd /root
 if [ -d "fucking-gorgeous-coloring-book" ]; then
   cd fucking-gorgeous-coloring-book && git pull
@@ -21,53 +17,32 @@ else
   cd fucking-gorgeous-coloring-book
 fi
 
-# Python venv
+# Setup venv
 python3 -m venv venv
 source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-pip install reportlab
-mkdir -p images output tmp
+pip install --quiet --upgrade pip
+pip install --quiet -r requirements.txt
 
-# Set HIGGSFIELD API key
-export HIGGSFIELD_API_KEY="410e1c5d-fac8-40fa-853b-293b255624c1:651d51867a6cf841a97484f8b65a80bfa35e9162265e04b65a97b75934bac171"
+# Set API key
+export LEONARDO_API_KEY="da844abf-24a9-46cf-956d-4239de3ebda0"
+
+# Create images dir
+mkdir -p images output
 
 echo ""
-echo "=========================================="
-echo "  SETUP DONE! Starting generation..."
-echo "  Backend: Higgsfield API"
-echo "=========================================="
+echo "=== Generating 55 designs with Leonardo.ai ==="
+python3 scripts/generate.py
+
 echo ""
-
-# Generate all 55 designs in batches
-echo "[BATCH 1/4] Designs 1-15..."
-python3 scripts/generate.py --start 1 --end 15 --delay 5
-
-echo "[BATCH 2/4] Designs 16-30..."
-python3 scripts/generate.py --start 16 --end 30 --delay 5
-
-echo "[BATCH 3/4] Designs 31-40..."
-python3 scripts/generate.py --start 31 --end 40 --delay 5
-
-echo "[BATCH 4/4] Designs 41-55..."
-python3 scripts/generate.py --start 41 --end 55 --delay 5
-
-echo "[COVER] Generating cover..."
-python3 scripts/generate.py --cover
-
-# Assemble PDF (Python-based, no ImageMagick OOM)
-echo ""
-echo "[ASSEMBLE] Building interior PDF (Python)..."
+echo "=== Assembling PDF ==="
 python3 scripts/assemble.py
 
 echo ""
-echo "=========================================="
-echo "  ALL DONE!"
-echo "=========================================="
+echo "=== Generating cover wrap ==="
+python3 scripts/cover_wrap.py
+
 echo ""
-IMG_COUNT=$(ls -1 images/*.png 2>/dev/null | wc -l)
-echo "  $IMG_COUNT images in ./images/"
-ls -la output/ 2>/dev/null
-echo ""
-echo "  Next: Upload to KDP at https://kdp.amazon.com"
-echo "=========================================="
+echo "=== DONE! ==="
+echo "  Interior: output/interior_draft.pdf"
+echo "  Cover:    output/cover_wrap.pdf"
+echo "  Upload to: https://kdp.amazon.com"
