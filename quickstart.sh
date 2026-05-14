@@ -1,6 +1,7 @@
 #!/bin/bash
 # ====================================================
 # F*CKING GORGEOUS - Quickstart (copy-paste this)
+# Uses HIGGSFIELD API for image generation
 # ====================================================
 set -e
 
@@ -24,12 +25,13 @@ pip install --upgrade pip
 pip install -r requirements.txt
 mkdir -p images output tmp
 
-# Set HF API key
-export HF_API_KEY="410e1c5d-fac8-40fa-853b-293b255624c1"
+# Set HIGGSFIELD API key
+export HIGGSFIELD_API_KEY="410e1c5d-fac8-40fa-853b-293b255624c1:651d51867a6cf841a97484f8b65a80bfa35e9162265e04b65a97b75934bac171"
 
 echo ""
 echo "=========================================="
 echo "  SETUP DONE! Starting generation..."
+echo "  Backend: Higgsfield API"
 echo "=========================================="
 echo ""
 
@@ -59,10 +61,9 @@ echo "=========================================="
 echo "  ALL DONE!"
 echo "=========================================="
 echo ""
-echo "Generated files:"
-ls -la images/*.png 2>/dev/null | wc -l
-echo " images in ./images/"
+IMG_COUNT=$(ls -1 images/*.png 2>/dev/null | wc -l)
+echo "  $IMG_COUNT images in ./images/"
 ls -la output/ 2>/dev/null
 echo ""
-echo "Next: Upload to KDP at https://kdp.amazon.com"
+echo "  Next: Upload to KDP at https://kdp.amazon.com"
 echo "=========================================="
