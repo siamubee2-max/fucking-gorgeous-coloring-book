@@ -1,6 +1,6 @@
 #!/bin/bash
 # ====================================================
-# F*CKING GORGEOUS - Quickstart (copy-paste this)
+# F*CKING GORGEOUS - Quickstart
 # Uses HIGGSFIELD API for image generation
 # ====================================================
 set -e
@@ -10,19 +10,23 @@ echo "  Setting up F*cking Gorgeous on VPS..."
 echo "=========================================="
 
 # Install deps
-apt update && apt install -y git python3-pip python3-venv imagemagick poppler-utils
+apt update && apt install -y git python3-pip python3-venk imagemagick poppler-utils
 
-# Clone
+# Clone (or update)
 cd /root
-rm -rf fucking-gorgeous-coloring-book 2>/dev/null || true
-git clone https://github.com/siamubee2-max/fucking-gorgeous-coloring-book.git
-cd fucking-gorgeous-coloring-book
+if [ -d "fucking-gorgeous-coloring-book" ]; then
+  cd fucking-gorgeous-coloring-book && git pull
+else
+  git clone https://github.com/siamubee2-max/fucking-gorgeous-coloring-book.git
+  cd fucking-gorgeous-coloring-book
+fi
 
 # Python venv
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
+pip install reportlab
 mkdir -p images output tmp
 
 # Set HIGGSFIELD API key
@@ -35,7 +39,7 @@ echo "  Backend: Higgsfield API"
 echo "=========================================="
 echo ""
 
-# Generate all 55 designs in batches to avoid rate limits
+# Generate all 55 designs in batches
 echo "[BATCH 1/4] Designs 1-15..."
 python3 scripts/generate.py --start 1 --end 15 --delay 5
 
@@ -51,10 +55,10 @@ python3 scripts/generate.py --start 41 --end 55 --delay 5
 echo "[COVER] Generating cover..."
 python3 scripts/generate.py --cover
 
-# Assemble PDF
+# Assemble PDF (Python-based, no ImageMagick OOM)
 echo ""
-echo "[ASSEMBLE] Building interior PDF..."
-bash scripts/assemble.sh
+echo "[ASSEMBLE] Building interior PDF (Python)..."
+python3 scripts/assemble.py
 
 echo ""
 echo "=========================================="
